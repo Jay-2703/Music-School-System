@@ -9,7 +9,7 @@ function Footer() {
         <div className='footer1'>
             <div className="footer-logo"></div>
             <div className="footer-title">
-            <p>Mixlab Music Studio</p>
+            <p>CONTACT AND INFORMATION</p>
             </div>
             <div className="location1">
                 <div className="footer-circle"></div>
@@ -23,7 +23,12 @@ function Footer() {
 
             <div className="location1">
                 <div className="footer-circle1"></div>
-                <span className='street'><p>jazelanne@gmail.com</p></span>
+                <span className='street'><p>Mixlab@gmail.com</p></span>
+            </div>
+
+            <div className="location1">
+                <div className="footer-circle1"></div>
+                <span className='street'><p>Branch Manager: Sam "LEONIDES"</p></span>
             </div>
         </div>
         <div className='footer2'>

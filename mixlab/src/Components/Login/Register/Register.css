@@ -1,0 +1,68 @@
+.register-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Aligns top so long form is scrollable */
+  min-height: 100vh;
+  background-color: #000;
+  padding: 40px 0;
+}
+
+.register-card {
+  background-color: #1e1e1e;
+  padding: 40px;
+  border-radius: 12px;
+  width: 600px; /* Wider than login */
+  max-width: 90%;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+  margin-top: 20px;
+}
+
+h1 { margin: 0; font-size: 32px; font-weight: bold; }
+.subtitle { color: #aaa; font-size: 14px; margin-top: 5px; margin-bottom: 30px; }
+.error-msg { color: #ff4444; margin-bottom: 20px; font-size: 14px; }
+
+/* Inputs */
+.input-group { margin-bottom: 20px; }
+.input-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #fff; }
+.input-group input {
+  width: 100%; padding: 12px 15px; background-color: #2b2b2b;
+  border: 1px solid #333; border-radius: 6px; color: #fff;
+  font-size: 14px; outline: none;
+}
+.input-group input:focus { border-color: #ffd700; }
+
+/* Side by Side Logic */
+.form-row { display: flex; gap: 15px; margin-bottom: 20px; }
+.input-group.half-width { flex: 1; margin-bottom: 0; }
+
+/* Helper Text */
+.helper-text { display: block; font-size: 11px; color: #888; margin-top: 6px; }
+
+/* Password & Icons */
+.password-wrapper { position: relative; }
+.eye-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888; display: flex; }
+
+/* Buttons */
+.login-btn {
+  width: 100%; padding: 12px; background-color: #ffd700;
+  border: none; border-radius: 6px; font-size: 16px; font-weight: bold;
+  color: #000; cursor: pointer; margin-top: 10px;
+}
+.login-btn:hover { background-color: #e6c200; }
+
+/* Date Picker Dark Mode */
+input[type="date"] { color-scheme: dark; }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; opacity: 0.7; }
+
+/* Social & Links */
+.divider { margin: 25px 0; text-align: center; border-bottom: 1px solid #333; line-height: 0.1em; }
+.divider span { background: #1e1e1e; padding: 0 10px; color: #666; font-size: 14px; }
+.social-buttons { display: flex; gap: 15px; }
+.social-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 12px; background-color: #333; border: 1px solid #444;
+  border-radius: 6px; color: #fff; cursor: pointer; font-size: 14px; gap: 8px;
+}
+.register-link { text-align: center; margin-top: 30px; font-size: 14px; color: #aaa; }
+.register-link a { color: #ffd700; text-decoration: none; font-weight: bold; }

@@ -1,6 +1,7 @@
-import './great.css'
+import './service.css'
 import Vmount from "../assets/mountain-img.jpg"
 import { Link } from "react-router-dom";
+
 // import Vresort from "../assets/header.jpg"
 // import Vhotel from "../assets/house-resort.jpg"
 import Vgif from "../assets/giphy.webp"
@@ -26,7 +27,7 @@ import Vluxury from "../assets/luxury-img.jpg"
 
 // import Vimg1 from "../assets/1-img.jpg"
 
-const Great = () => {
+const Service = () => {
     return (
         <>
         <div>
@@ -310,4 +311,4 @@ const Great = () => {
     )
  }
 
- export default Great
+ export default Service

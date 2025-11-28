@@ -1,17 +1,41 @@
 import './Nav.css'
 import { useState, useEffect } from 'react';
-import  Hamburger from '../Hamburger/Hamburger';
-import { Link } from "react-router-dom";
+import Hamburger from '../Hamburger/Hamburger';
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+
+import { auth } from "../../firebase"; 
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 function Nav() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null); 
+
+  // 1. Listen to Authentication State
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 2. Handle Logout
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/'); // Redirect to home after logout
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
   
-  
+  // --- Sticky Header Logic (Kept exactly as you had it) ---
   const [isSticky, setIsSticky] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollTop, setLastScrollTop] = useState(0);
 
   useEffect(() => {
     const header = document.querySelector('header');
+    if (!header) return; // Safety check
     const headerHeight = header.offsetHeight + 30;
 
     const handleScroll = () => {
@@ -33,39 +57,49 @@ function Nav() {
     };
 
     window.addEventListener('scroll', handleScroll);
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [lastScrollTop]);
+
+
   return (
     <>
         <nav className='Nav1'>
             <header className={`${isSticky ? 'cs_gescout_sticky' : ''} ${isVisible ? 'cs_gescout_show' : ''}`}>
-            <div className="logo">
-
+              
+              {/* Logo Area */}
+              <div className="logo">
+                 {/* You can add an <img /> here later */}
               </div>
 
               <ul className='ul1'>
                   <li className='li1'><Link to="/" className="li1">Home</Link></li>
-                  <li className='li1'><Link to="/countries" className="li1">Services</Link></li>
+                  <li className='li1'><Link to="/service" className="li1">Services</Link></li>
                   <li className='li1'><Link to="/tc" className="li1">Divisions</Link></li>
                   <li className='li1'><Link to="/Contact" className="li1">Contact</Link></li>
                   <li className='li1'><Link to="/about" className="li1">About</Link></li>
-              </ul>
 
-              <div className="search-bar">
-              <div className="container-input">
-                <input type="text" placeholder="Search" name="text" className="input"/>
-                <svg fill="#fff" width="20px" height="20px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M790.588 1468.235c-373.722 0-677.647-303.924-677.647-677.647 0-373.722 303.925-677.647 677.647-677.647 373.723 0 677.647 303.925 677.647 677.647 0 373.723-303.924 677.647-677.647 677.647Zm596.781-160.715c120.396-138.692 193.807-319.285 193.807-516.932C1581.176 354.748 1226.428 0 790.588 0S0 354.748 0 790.588s354.748 790.588 790.588 790.588c197.647 0 378.24-73.411 516.932-193.807l516.028 516.142 79.963-79.963-516.142-516.028Z" fillRule="evenodd"></path>
-              </svg>
-              </div>  
-              </div>  
+                  {/* --- NEW LOGIN / LOGOUT MAPPING --- */}
+                  {user ? (
+                    // IF LOGGED IN: Show Logout
+                    <li className='li1'>
+                       <button onClick={handleLogout} className="nav-logout-btn">
+                         Log Out
+                       </button>
+                    </li>
+                  ) : (
+                    // IF LOGGED OUT: Show Login
+                    <li className='li1'>
+                      <Link to="/login" className="li1" style={{color: '#ffd700'}}>Log In</Link>
+                    </li>
+                  )}
+                  {/* ---------------------------------- */}
+            </ul> 
 
-              <div className="hamburger">
-                  <Hamburger/>
-              </div>
+            <div className="hamburger">
+                <Hamburger/>
+            </div>
             </header>
         </nav>
     </>

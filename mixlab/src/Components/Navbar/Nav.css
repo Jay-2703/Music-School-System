@@ -82,15 +82,68 @@ header .ul1{
     text-decoration: none;
     color: white;
 }
-.search-bar{
+
+ /* Basic setup for the preview */
+            .navbar {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+                background-color: #1a1a1a; /* Dark background to match your contrast */
+                height: 100vh;
+                position: relative;
+            }
+
+            /* Log In Button Styles */
+            .login-btn {
+                background-color: #FFE600; /* Bright Yellow match */
+                color: #000000;
+                border: none;
+                border-radius: 12px; /* Rounded corners */
+                padding: 10px 24px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.1s ease, background-color 0.2s;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            }
+
+            .login-btn:hover {
+                background-color: #FDD835; /* Slightly darker yellow on hover */
+                transform: scale(1.02);
+            }
+
+            .login-btn:active {
+                transform: scale(0.98);
+            }
+
+            .nav-logout-btn {
+                background: transparent;
+                border: 1px solid #ffd700; /* Yellow border */
+                color: #ffd700;
+                padding: 5px 15px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: all 0.3s ease;
+                font-family: inherit; /* Use the same font as the rest of the nav */
+            }
+
+            .nav-logout-btn:hover {
+                background-color: #ffd700;
+                color: #000; /* Black text on yellow background */
+}
+
+/* .search-bar{
     width: 18%;
     height: 40px;
-    /* border: 2px solid white; */
+    /* border: 2px solid white; 
     margin-right: 20px;
 }
 
 
-/* From Uiverse.io by garerim */ 
+/* From Uiverse.io by garerim 
 .container-input {
     position: relative;
   }
@@ -118,7 +171,7 @@ header .ul1{
   .input:focus {
     opacity: 1;
     width: 250px;
-  }
+  } */
 
 
 

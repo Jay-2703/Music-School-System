@@ -586,7 +586,7 @@ header a{
 .blog-title {
     text-align: center;
     margin-top: -5% ;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     color: white; 
 }
 
@@ -594,6 +594,7 @@ header a{
     font-size: 16px; /* Adjust as needed */
     margin: 0;
     opacity: 0.8;
+    
 }
 
 .blog-title h2 {
@@ -1318,7 +1319,7 @@ header a{
         border-radius: 12px;
         background-blend-mode: darken;
         background-color: #0000006f;
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/Images/3d74639d40ae75295fd25719ce35b886.jpg);
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/1mixlabphoto/studio/artist1.jpg);
         display: flex;
         align-items: center;
         justify-content: end;
@@ -1339,7 +1340,7 @@ header a{
         border-radius: 12px;
         background-blend-mode: darken;
         background-color: #0000006f;
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/Images/82a1a41dee6c90b5528cdb0743c2d228.jpg);
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/1mixlabphoto/studio/bugoydd.jpg);
         display: flex;
         align-items: center;
         justify-content: end;
@@ -1360,7 +1361,7 @@ header a{
         border-radius: 12px;
         background-blend-mode: darken;
         background-color: #0000006f;
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/Images/706a94b62285d3945f4bc2ef6ccac314.jpg);
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/1mixlabphoto/studio/zild1.jpg);
         display: flex;
         align-items: center;
         justify-content: end;
@@ -1381,7 +1382,7 @@ header a{
         border-radius: 12px;
         background-blend-mode: darken;
         background-color: #0000006f;
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/Images/cf197f5080b7988a09750252a9dce5df.jpg);
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/1mixlabphoto/studio/sam.jpg);
         display: flex;
         align-items: center;
         justify-content: end;
@@ -1401,7 +1402,7 @@ header a{
         display: flex;
         align-items: end;
         justify-content: center;
-        background-image: url(/src/assets/Images/ee.jpg);
+        background-image: url(/src/assets/1mixlabphoto/Studio/studio1.1.jpg);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -1419,7 +1420,7 @@ header a{
         display: flex;
         align-items: end;
         justify-content: center;
-        background-image: url(/src/assets/Images/t.jpg);
+        background-image: url(/src/assets/1mixlabphoto/Studio/studio1.1.jpg);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -1437,7 +1438,7 @@ header a{
         display: flex;
         align-items: end;
         justify-content: center;
-        background-image: url(/src/assets/Images/rr.jpg);
+        background-image: url(/src/assets/1mixlabphoto/Studio/studio1.1.jpg);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -1455,7 +1456,7 @@ header a{
         display: flex;
         align-items: end;
         justify-content: center;
-        background-image: url(/src/assets/Images/6ad9cb735d2afaee1ff9fdf9118676c1.jpg);
+        background-image: url(/src/assets/1mixlabphoto/Studio/studio1.1.jpg);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -1742,7 +1743,7 @@ header a{
         border-radius: 12px;
         background-blend-mode: darken;
         background-color: #0000006f;
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/Images/3d74639d40ae75295fd25719ce35b886.jpg);
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/1mixlabphoto/studio/artist1.jpg);
         display: flex;
         align-items: center;
         justify-content: end;
@@ -1763,7 +1764,7 @@ header a{
         border-radius: 12px;
         background-blend-mode: darken;
         background-color: #0000006f;
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/Images/82a1a41dee6c90b5528cdb0743c2d228.jpg);
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/1mixlabphoto/studio/bugoydd.jpg);
         display: flex;
         align-items: center;
         justify-content: end;
@@ -1784,7 +1785,7 @@ header a{
         border-radius: 12px;
         background-blend-mode: darken;
         background-color: #0000006f;
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/Images/706a94b62285d3945f4bc2ef6ccac314.jpg);
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/1mixlabphoto/studio/zild1.jpg);
         display: flex;
         align-items: center;
         justify-content: end;
@@ -1805,7 +1806,7 @@ header a{
         border-radius: 12px;
         background-blend-mode: darken;
         background-color: #0000006f;
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(/src/assets/Images/cf197f5080b7988a09750252a9dce5df.jpg);
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)),url(//src/assets/1mixlabphoto/studio/sam.jpg);
         display: flex;
         align-items: center;
         justify-content: end;
@@ -2049,7 +2050,7 @@ header a{
         -webkit-box-direction: normal;
         -ms-flex-direction: column;
         flex-direction: column;
-        background-image: url(/src/assets/Images/cf197f5080b7988a09750252a9dce5df.jpg);
+        background-image: url(/src/assets/1mixlabphoto/Studio/studio1.1.jpg);
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -2064,7 +2065,7 @@ header a{
         display: flex;
         align-items: end;
         justify-content: center;
-        background-image: url(/src/assets/Images/ee.jpg);
+        background-image: url(/src/assets/1mixlabphoto/Studio/studio1.1.jpg);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -2082,7 +2083,7 @@ header a{
         display: flex;
         align-items: end;
         justify-content: center;
-        background-image: url(/src/assets/Images/rr.jpg);
+        background-image: url(/src/assets/1mixlabphoto/Studio/studio1.1.jpg);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -2181,7 +2182,7 @@ header a{
         -webkit-box-direction: normal;
         -ms-flex-direction: column;
         flex-direction: column;
-        background-image: url(/src/assets/Images/cf197f5080b7988a09750252a9dce5df.jpg);
+        background-image: url(/src/assets/1mixlabphoto/Studio/studio1.1.jpg);
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -2431,7 +2432,7 @@ header a{
         -webkit-box-direction: normal;
         -ms-flex-direction: column;
         flex-direction: column;
-        background-image: url(/src/assets/Images/cf197f5080b7988a09750252a9dce5df.jpg);
+        background-image: url(/src/assets/1mixlabphoto/Studio/studio1.1.jpg);
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;

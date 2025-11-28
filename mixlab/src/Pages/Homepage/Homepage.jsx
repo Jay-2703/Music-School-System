@@ -144,7 +144,7 @@ const Homepage = () => {
 
     <section className='blog'> 
 
-            <div className="-title"data-aos="slide-up" data-aos-duration="1800">
+            <div className="blog-title"data-aos="slide-up" data-aos-duration="1800">
                 <p>Mixlab</p>
                 <h2>Events</h2>
             </div>
@@ -239,7 +239,7 @@ const Homepage = () => {
               <div className="videocard" data-aos="slide-left" data-aos-duration="1800">
                 <iframe 
                   className='vi' 
-                  src="https://www.youtube.com/embed/cpKqqQNukuU?autoplay=1&mute=0&loop=1&playlist=cpKqqQNukuU&controls=0&showinfo=0" 
+                  src="https://www.youtube.com/embed/cpKqqQNukuU?autoplay=1&mute=1&loop=1&playlist=cpKqqQNukuU&controls=0&showinfo=0" 
                   title="YouTube video player" 
                   frameBorder="0" 
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -304,12 +304,12 @@ const Homepage = () => {
           </div>
 
           <div className="trending">
-              <span data-aos="slide-right" data-aos-duration="1400"><h2>Popular tour</h2></span>
+              <span data-aos="slide-right" data-aos-duration="1400"><h2>Inside of Mixlab Studio</h2></span>
 
               <div className="tour-data">
                   <div className="tour-card" data-aos="slide-right" data-aos-duration="1400">
                     <div className="tc-info">
-                      <span>Paris, France </span>
+                      <span>Rehearsal Room</span>
                       <div className="tour-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-right-circle" viewBox="0 0 16 16">
                         <path fillRule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
                       </svg></div>
@@ -319,7 +319,7 @@ const Homepage = () => {
 
                   <div className="tour-card1"data-aos="slide-right" data-aos-duration="1600">
                     <div className="tc-info">
-                      <span>Kyoto, Japan </span>
+                      <span>Dance Room </span>
                       <div className="tour-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-right-circle" viewBox="0 0 16 16">
                         <path fillRule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
                       </svg></div>
@@ -328,7 +328,7 @@ const Homepage = () => {
 
                   <div className="tour-card2"data-aos="slide-right" data-aos-duration="1800">
                     <div className="tc-info">
-                      <span>Santorini, Greece </span>
+                      <span>Recording Studio</span>
                       <div className="tour-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-right-circle" viewBox="0 0 16 16">
                         <path fillRule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
                       </svg></div>
@@ -338,7 +338,7 @@ const Homepage = () => {
 
                   <div className="tour-card3" data-aos="slide-right" data-aos-duration="2000">
                     <div className="tc-info">
-                      <span>Machu Picchu, Peru  </span>
+                      <span>Mix and Mastering</span>
                       <div className="tour-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-right-circle" viewBox="0 0 16 16">
                         <path fillRule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
                       </svg></div>
