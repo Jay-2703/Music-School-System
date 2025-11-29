@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './Register.css'; 
-import { auth, googleProvider, db } from "../../../firebase"; // Go up 3 levels to src/
+import { auth, googleProvider, db } from "../../../firebase"; 
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore"; // Added getDoc
 import { Link, useNavigate } from 'react-router-dom';
 import { FaGoogle, FaFacebookF, FaEye, FaEyeSlash } from 'react-icons/fa';
 
@@ -22,6 +22,7 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // --- MANUAL REGISTER ---
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
@@ -45,11 +46,12 @@ const Register = () => {
         birthday: formData.birthday,
         contactNumber: formData.contactNumber,
         address: formData.address,
+        role: 'user', // Default role
         createdAt: new Date()
       });
 
       alert("Account Created Successfully!");
-      navigate('/home'); 
+      navigate('/'); // Redirect to Home
 
     } catch (err) {
       console.error(err);
@@ -61,14 +63,37 @@ const Register = () => {
     }
   };
 
+  // --- GOOGLE REGISTER (UPDATED) ---
   const handleGoogleRegister = async () => {
     try {
-       await signInWithPopup(auth, googleProvider);
-       // Note: Google sign in might not capture Address/Phone, 
-       // you might want to redirect them to a profile completion page later.
-       navigate('/home');
+       // 1. Popup Google Login
+       const result = await signInWithPopup(auth, googleProvider);
+       const user = result.user;
+
+       // 2. Check if user already exists in Firestore
+       const docRef = doc(db, "users", user.uid);
+       const docSnap = await getDoc(docRef);
+
+       if (!docSnap.exists()) {
+         // 3. If new user, SAVE to Firestore
+         await setDoc(doc(db, "users", user.uid), {
+           username: user.displayName, // Use Google name as username
+           firstName: user.displayName.split(' ')[0], // Split name
+           lastName: user.displayName.split(' ')[1] || '',
+           email: user.email,
+           birthday: '',       // Google doesn't provide these, user can edit later
+           contactNumber: '',  
+           address: '',
+           role: 'user',       // Default role
+           createdAt: new Date()
+         });
+       }
+
+       // 4. Redirect
+       navigate('/');
     } catch(err) {
-       console.error(err);
+       console.error("Google Register Error:", err);
+       setError("Google Sign-in failed. Please try again.");
     }
   }
 
@@ -129,6 +154,7 @@ const Register = () => {
                 onChange={handleChange}
                 required
               />
+              {/* Eye Icon Logic */}
               <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>

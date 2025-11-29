@@ -103,7 +103,7 @@
     margin-left: 250px; /* Leave space for sidebar */
     flex: 1;
     padding: 40px;
-    background-color: #0d0d0d;
+    background-color: #000000;
 }
 
 .admin-header {

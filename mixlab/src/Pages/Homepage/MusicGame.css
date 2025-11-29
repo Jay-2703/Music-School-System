@@ -1,0 +1,387 @@
+/* --- CONTAINER & LAYOUT --- */
+.game-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0f172a; /* Slate 900 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* Top priority */
+}
+
+.game-container {
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    max-height: 850px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    font-family: 'Roboto', sans-serif;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+@media (min-width: 640px) {
+    .game-container {
+        border-radius: 16px;
+    }
+}
+
+/* --- HEADER --- */
+.game-header {
+    background-color: #303F9F; /* Indigo */
+    color: white;
+    padding: 1rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+}
+
+.header-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    flex: 1;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* --- HOME SCREEN --- */
+.home-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px; /* Spacing between elements */
+    padding: 24px;
+    background-color: #f1f5f9; /* Slate 100 */
+}
+
+/* Red Button */
+.btn-lessons {
+    background-color: #FF5252;
+    width: 100%;
+    max-width: 320px;
+    color: white;
+    font-size: 1.125rem;
+    font-weight: 500;
+    padding: 12px;
+    border-radius: 6px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-lessons:hover {
+    opacity: 0.9;
+}
+
+/* Start Button */
+.start-btn-wrapper {
+    position: relative;
+}
+
+.start-btn-glow {
+    position: absolute;
+    inset: 0;
+    background-color: #e5e7eb;
+    border-radius: 50%;
+    filter: blur(12px);
+    transform: scale(1.05);
+}
+
+.btn-start {
+    position: relative;
+    background-color: black;
+    width: 192px; /* 12rem */
+    height: 192px;
+    color: white;
+    font-size: 1.875rem; /* 3xl */
+    font-weight: bold;
+    border-radius: 50%;
+    border: 4px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: transform 0.2s;
+}
+
+.btn-start:hover {
+    transform: scale(1.05);
+}
+
+/* Blue Buttons Row */
+.bottom-btns {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    width: 100%;
+}
+
+.btn-blue-circle {
+    background-color: #2196F3;
+    width: 96px;
+    height: 96px;
+    color: white;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-blue-circle:hover {
+    opacity: 0.9;
+}
+
+/* --- GAME SCREEN --- */
+.game-play-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    position: relative;
+}
+
+.stats-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: bold;
+    margin: 0;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #000000;
+    margin: 0;
+}
+
+.stat-red {
+    color: #ef4444; /* Red text color */
+}
+
+.stat-blue {
+    color: #2563eb; /* Blue text color */
+}
+
+/* Ensure the background is removed from the main value class */
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1e293b;
+    margin: 0;
+}
+
+/*  .stat-value.red { color: #ef4444; }
+.stat-value.blue { color: #2563eb; } */
+
+.sheet-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+}
+
+.sheet-paper {
+    background-color: #fef3c7; /* Amber 50 */
+    border: 4px solid #1e293b;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Piano Keys */
+.piano-container {
+    padding-bottom: 24px;
+    padding-top: 16px;
+    background-color: white;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.black-keys-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: -15px; /* Overlap white keys */
+    z-index: 20;
+    padding-left: 20px; /* Adjust alignment */
+}
+
+.white-keys-row {
+    display: flex;
+    gap: 4px;
+    z-index: 10;
+}
+
+.key-white {
+    background-color: white;
+    color: black;
+    width: 40px;
+    height: 64px;
+    border-radius: 0 0 8px 8px;
+    font-size: 1.125rem;
+    font-weight: bold;
+    border: 1px solid #cbd5e1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.key-white:active { background-color: #585858; transform: scale(0.98); }
+
+.key-black {
+    background-color: #000000;
+    color: rgb(255, 255, 255);
+    width: 40px;
+    height: 48px;
+    border-radius: 0 0 8px 8px;
+    font-size: 0.875rem;
+    font-weight: bold;
+    border: 1px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.key-black:active { background-color: rgb(185, 185, 185); transform: scale(0.98); }
+
+.spacer-key { width: 40px; }
+
+/* Modals */
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-cancel {
+    color: #2563eb;
+    padding: 8px 16px;
+    border-radius: 4px;
+    background: none;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+.btn-quit {
+    color: #ef4444;
+    padding: 8px 16px;
+    border-radius: 4px;
+    background: none;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+.btn-cancel:hover { background-color: #eff6ff; }
+.btn-quit:hover { background-color: #fef2f2; }
+
+/* Lesson List */
+.lessons-container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: #f8fafc;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.lesson-card {
+    background-color: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-left: 8px solid #3b82f6;
+}
+.lesson-card.completed { border-left-color: #22c55e; }
+
+.lesson-btn {
+    margin-top: 16px;
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.lesson-btn.unlocked { background-color: #2563eb; color: white; }
+.lesson-btn.locked { background-color: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+

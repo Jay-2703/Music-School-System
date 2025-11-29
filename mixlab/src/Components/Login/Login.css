@@ -76,9 +76,13 @@
 }
 
 .login-submit-btn {
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  text-align: center; 
   width: 100%;
   padding: 12px;
-  background-color: #ffd700; /* Main Yellow Color */
+  background-color: #ffd700;
   color: #000;
   border: none;
   border-radius: 8px;
@@ -87,6 +91,7 @@
   cursor: pointer;
   margin-top: 10px;
   transition: background-color 0.3s;
+  justify-content: center;
 }
 
 .login-submit-btn:hover {
@@ -155,4 +160,10 @@
   color: #ffd700;
   font-weight: bold;
   cursor: pointer;
+}
+
+/* Hide the default browser reveal button */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
 }

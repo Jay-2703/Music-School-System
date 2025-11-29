@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import './Homepage.css'
-// import AOS from 'aos';
-// import 'aos/dist/aos.css';
+import './Homepage.css';
+import { useNavigate } from 'react-router-dom';
+
+// 1. IMPORT FIREBASE AUTH
+import { auth } from '../../firebase'; 
+import { onAuthStateChanged } from 'firebase/auth';
 
 import micImg from '../../assets/1mixlabphoto/studio/micropone.jpg';
 import studio1Img from '../../assets/1mixlabphoto/studio/studio1.1.jpg';
@@ -9,28 +12,79 @@ import studio2Img from '../../assets/1mixlabphoto/studio/studio1.2.jpg';
 import studioMicImg from '../../assets/1mixlabphoto/studio/studiomic.jpg';
 
 const Homepage = () => {
-
-    //   AOS.init({
-    //     offset: 1,
-    // });
-
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const timeRunning = 3000;
-  const timeAutoNext = 7000;
   const carouselRef = useRef(null);
 
+  // --- AUTH STATE ---
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [user, setUser] = useState(null); 
+  const [loading, setLoading] = useState(true); // Prevents popup from flashing while checking
+
+  // --- 2. LISTEN FOR FIREBASE LOGIN ---
+  useEffect(() => {
+    // This listener waits for Firebase to confirm the login status
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false); // We are done checking
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // --- 3. CLICK LOGIC ---
+  const handlePlayClick = () => {
+    if (loading) return; // Wait if still checking
+
+    if (user) {
+      // User is confirmed logged in -> GO TO GAME
+      navigate('/game');
+    } else {
+      // User is NOT logged in -> SHOW POPUP
+      setShowAuthModal(true);
+    }
+  };
+
   const sliderItems = [
-   { img: micImg, title: 'MIXLAB'},         // Use the variable, not the string
-    { img: studio1Img, title: 'MIXLAB'},
-    { img: studio2Img, title: 'MIXLAB'},
-    { img: studioMicImg, title: 'MIXLAB'},
+    {
+      img: micImg,
+      author: 'MIXLAB',
+      title: 'Mixlab Music Studio',
+      topic: '', 
+      des: 'MixLab Music Studios Inc. is a music company that provides a wide range of services such as music production, custom jingle creation, rehearsal and recording space.',
+      hasGame: false
+    },
+    {
+      img: studio1Img,
+      author: 'MIXLAB',
+      title: 'Creative Space',
+      topic: 'Design',
+      des: 'Our studio is designed to inspire creativity. With professional acoustic treatment and top-of-the-line gear, you can focus entirely on your art.',
+      hasGame: false
+    },
+    {
+      img: studio2Img,
+      author: 'MIXLAB',
+      title: 'Interactive',
+      topic: 'Tutor',
+      des: 'Test your musical skills with our interactive Music Tutor game! Learn to identify notes and improve your pitch recognition right here.',
+      hasGame: true
+    },
+    {
+      img: studioMicImg,
+      author: 'MIXLAB',
+      title: 'Production',
+      topic: 'Quality',
+      des: 'From recording to mastering, we ensure industry-standard quality for all your audio projects. Book a session with us today.',
+      hasGame: false
+    },
   ];
 
+  // Auto-run logic
   useEffect(() => {
+    const timeAutoNext = 7000;
     const autoNext = setTimeout(() => {
       showSlider('next');
     }, timeAutoNext);
-
     return () => clearTimeout(autoNext);
   }, [currentIndex]);
 
@@ -41,54 +95,98 @@ const Homepage = () => {
     } else {
       newIndex = (currentIndex - 1 + sliderItems.length) % sliderItems.length;
     }
-
     setCurrentIndex(newIndex);
 
     if (carouselRef.current) {
       carouselRef.current.classList.add(type);
       setTimeout(() => {
         carouselRef.current.classList.remove(type);
-      }, timeRunning);
+      }, 3000);
+    }
+  };
+
+  const handleScrollDown = () => {
+    const nextSection = document.querySelector('.info'); 
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   return (
-        <div className="main">
-             <div className="carousel" ref={carouselRef}>
-      <div className="list">
-        {sliderItems.map((item, index) => (
-          <div key={index} className="item" style={{ display: index === currentIndex ? 'block' : 'none' }}>
-            <img src={item.img} alt={item.title} />
-            <div className="content">
-              <div className="title">MixLab Music Studios</div>
-              <div className="des">
-              MixLab Music Studios Inc. is a music company that provides a wide 
-              range of services such as music production, custom jingle creation, 
-              rehearsal and recording space, and music education. With a focus on 
-              quality, creativity, and client satisfaction, MixLab aims to be a one-stop 
-              destination for all audio and music production needs.
-              </div>
-              <div className="buttons">
-                <button className='title-button'>SCROLLDWON TO SEE MORE</button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="thumbnail">
-        {sliderItems.map((item, index) => (
-          <div key={index} className="item" onClick={() => setCurrentIndex(index)}>
-            <img src={item.img} alt={item.title} />
-            <div className="content">
-              <div className="title">Mixlab</div>
-              <div className="description">Description</div>
-            </div>
-          </div>
-        ))}
-      </div>
-      {/* <div className="time"></div> */}
-    </div>
+    <div className="main">
+      
+      {/* AUTH POPUP (Only shows if NOT logged in) */}
+      {showAuthModal && (
+        <div className="auth-overlay">
+          <div className="auth-box">
+            <h2>Authentication Required</h2>
+            <p>You need to be logged in to access the Music Tutor Game.</p>
+            
+            <button className="auth-btn btn-login-opt" onClick={() => navigate('/Login')}>
+              Login
+            </button>
 
+            <button className="auth-btn btn-register-opt" onClick={() => navigate('/register')}>
+              Register
+            </button>
+
+            <button className="auth-btn btn-not-now" onClick={() => setShowAuthModal(false)}>
+              Not Now
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="carousel" ref={carouselRef}>
+        <div className="list">
+          {sliderItems.map((item, index) => (
+            <div 
+              key={index} 
+              className="item" 
+              style={{ display: index === currentIndex ? 'block' : 'none' }}
+            >
+              <img src={item.img} alt={item.title} />
+              
+              <div className="content">
+                <div className="author">{item.author}</div>
+                <div className="title">{item.title}</div>
+                <div className="topic">{item.topic}</div>
+                <div className="des">{item.des}</div>
+                
+                <div className="buttons">
+                  <button className='title-button' onClick={handleScrollDown}>
+                    SCROLL DOWN TO SEE MORE
+                  </button>
+                  
+                  {item.hasGame && (
+                    <button className='title-button' onClick={handlePlayClick}>
+                      PLAY MUSIC TUTOR
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="thumbnail">
+          {sliderItems.map((item, index) => (
+            <div 
+              key={index} 
+              className={`item ${index === currentIndex ? 'active' : ''}`} 
+              onClick={() => setCurrentIndex(index)}
+            >
+              <img src={item.img} alt={item.title} />
+              <div className="content">
+                <div className="title">{item.title}</div>
+                <div className="description">{item.topic}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    {/* AFTER THE FIRST ONE OTHERS SSSSSSSSUUUUUPPPPPPERRRMAAANNNN  INFO */}
     <section className='info'>
           <div className='info1'data-aos="fade-up" data-aos-duration="1400">
             <p> MixLab Music Studios Inc. is a music company that provides a wide 
@@ -114,6 +212,8 @@ const Homepage = () => {
           </div>
     </section>
 
+
+          {/* FEATURED SECTIOOONNNNNN */}
     <section className='card'>
         <div className="line-title"data-aos="slide-up" data-aos-duration="1800">
             <p>Featured</p>
@@ -193,36 +293,6 @@ const Homepage = () => {
               </div>
     </section>
 
-   {/*   <section className='blog100'>
-            <div className="blog1">
-            <div className="blog-play" data-aos="slide-up" data-aos-duration="1400">
-                <div className="billboard">
-                    
-                </div>
-
-                <span className='date'>May 1, 2023</span>
-
-                <div className="information">
-                    <h2><a href="#" className='cs_post_title cs_semibold cs_fs_32'>The Importance of Regular Cancer Screenings and Early Detection</a></h2>
-                </div>
-            </div>
-
-
-            <div className="blog-play1" data-aos="slide-up" data-aos-duration="1600">
-                <div className="billboard1">
-                    
-                </div>
-
-                <span className='date'>May 1, 2023</span>
-
-                <div className="information">
-                    <h2><a href="#" className='cs_post_title cs_semibold cs_fs_32'>The Importance of Regular Cancer Screenings and Early Detection</a></h2>
-                </div>
-            </div>
-            </div>
-      </section> */}
-
-
     <section className='bash'>
           <div className="room">
             <div className="room1">
@@ -245,7 +315,7 @@ const Homepage = () => {
               <div className="videocard" data-aos="slide-left" data-aos-duration="1800">
                 <iframe 
                   className='vi' 
-                  src="https://www.youtube.com/embed/cpKqqQNukuU?autoplay=0&mute=0&loop=1&playlist=cpKqqQNukuU&controls=0&showinfo=0" 
+                  src="https://www.youtube.com/embed/cpKqqQNukuU?autoplay=1&mute=0&loop=1&playlist=cpKqqQNukuU&controls=0&showinfo=0" 
                   title="YouTube video player" 
                   frameBorder="0" 
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -253,11 +323,6 @@ const Homepage = () => {
                   allowFullScreen
                 ></iframe>
               </div>
-
-              {/* <div className="videocard"data-aos="slide-left" data-aos-duration="1800">
-              <video src="https://www.youtube.com/watch?v=cpKqqQNukuU" className='vi' autoPlay loop muted></video>
-              </div>    USE THIS IF THE VIDEO IS FROM PC*/}
-              
             </div>
           </div>
     </section>

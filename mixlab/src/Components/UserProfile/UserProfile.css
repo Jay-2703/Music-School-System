@@ -1,0 +1,140 @@
+.profile-container {
+    min-height: 100vh;
+    background-color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 20px 40px; /* Top padding clears the fixed nav */
+}
+
+.profile-card {
+    background-color: #1a1a1a;
+    width: 100%;
+    max-width: 800px;
+    border-radius: 12px;
+    padding: 40px;
+    border: 1px solid #333;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+.avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.avatar-icon {
+    font-size: 80px;
+    color: #ffd700;
+}
+
+.avatar-section h2 {
+    color: #fff;
+    margin: 0;
+    font-size: 2rem;
+}
+
+.role-badge {
+    background-color: #333;
+    color: #ffd700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    margin-left: 10px;
+    letter-spacing: 1px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+    border: none;
+}
+
+.edit-btn { background: #ffd700; color: #000; }
+.edit-btn:hover { background: #e6c200; }
+
+.save-btn { background: #4caf50; color: #fff; }
+.save-btn:hover { background: #45a049; }
+
+.cancel-btn { background: #ff4444; color: #fff; }
+.cancel-btn:hover { background: #cc0000; }
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.half { width: 50%; }
+
+.detail-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detail-group label {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.detail-group input, 
+.detail-group textarea {
+    background-color: #252525;
+    border: 1px solid #333;
+    padding: 12px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.detail-group input:disabled, 
+.detail-group textarea:disabled {
+    background-color: #1a1a1a; /* Blends into background when not editing */
+    border-color: transparent;
+    color: #ccc;
+    cursor: default;
+}
+
+.read-only {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    .avatar-section { flex-direction: column; }
+    .form-row { flex-direction: column; }
+    .half { width: 100%; }
+}

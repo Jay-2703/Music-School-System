@@ -1,6 +1,42 @@
-*{
+/* 1. TAILWIND IMPORTS (Keep these at the top) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 2. RESTORE YOUR GLOBAL STYLES */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  overflow-x: none;
+  background-color: black; /* Restores the black theme */
+  color: #eee;             /* Restores white text */
+  font-family: "Roboto", sans-serif; /* Restores your font */
+  font-size: 12px;
+  overflow-x: hidden;
+}
+
+/* 3. FIX TAILWIND RESETS (Tailwind strips these, so we add them back) */
+
+/* Make headings bold again */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* Restore basic button cursor */
+button {
+  cursor: pointer;
+}
+
+/* Restore link defaults */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Ensure images don't break layouts */
+img {
+  max-width: 100%;
+  display: block;
 }

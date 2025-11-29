@@ -84,10 +84,8 @@ function Nav() {
               </div>
 
               <ul className='ul1'>
-                  {/* HOME IS ALWAYS VISIBLE */}
                   <li className='li1'><Link to="/" className="li1">Home</Link></li>
 
-                  {/* HIDE ALL OTHER LINKS AND BUTTONS IF ON ADMIN PAGE */}
                   {!isAdminPage && (
                     <>
                       <li className='li1'><Link to="/service" className="li1">Services</Link></li>
@@ -95,7 +93,6 @@ function Nav() {
                       <li className='li1'><Link to="/Contact" className="li1">Contact</Link></li>
                       <li className='li1'><Link to="/about" className="li1">About</Link></li>
 
-                      {/* ADMIN LINK: Show only if Admin */}
                       {userRole === 'admin' && (
                         <li className='li1'>
                           <Link to="/admin" className="li1" style={{color: '#ff4444', fontWeight: 'bold'}}>Admin Dashboard</Link>
@@ -111,20 +108,37 @@ function Nav() {
                             style={{ color: '#ffd700', fontWeight: 'bold', borderBottom: '1px solid #ffd700' }}>Book Now</Link>
                         </li>
                       )}
-
-                      {/* LOGIN / LOGOUT */}
-                      {user ? (
-                        <li className='li1'>
-                          <button onClick={handleLogout} className="nav-logout-btn">
-                            Log Out
-                          </button>
-                        </li>
-                      ) : (
-                        <li className='li1'>
-                          <Link to="/login" className="nav-login-btn">Log In</Link>
-                        </li>
-                      )}
                     </>
+                  )}
+
+                  {user ? (
+                    <>
+                       {/* MY PROFILE */}
+                       <li className='li1'>
+                         <Link 
+                            to="/profile" 
+                            className="li1" 
+                            style={{ color: '#ffd700', fontWeight: 'bold', borderBottom: '1px solid #ffd700' }}
+                         >
+                            My Profile
+                         </Link>
+                       </li>
+
+                       {/* LOGOUT BUTTON - HIDE IF ON ADMIN PAGE (Since Sidebar has it) */}
+                       {!isAdminPage && (
+                           <li className='li1'>
+                             <button onClick={handleLogout} className="nav-logout-btn">
+                               Log Out
+                             </button>
+                           </li>
+                       )}
+                    </>
+                  ) : (
+                    !isAdminPage && (
+                        <li className='li1'>
+                        <Link to="/login" className="nav-login-btn">Log In</Link>
+                        </li>
+                    )
                   )}
                   
             </ul> 

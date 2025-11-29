@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Admin.css';
 import { db, auth } from '../../firebase'; 
-import { collection, getDocs, query, orderBy, doc, updateDoc, getDoc, setDoc } from 'firebase/firestore'; 
+import { collection, getDocs, query, orderBy, doc, updateDoc, getDoc, setDoc, limit } from 'firebase/firestore'; 
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import QRCode from "react-qr-code";
@@ -9,46 +9,45 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell
 } from 'recharts';
-import { FaChartLine, FaCalendarAlt, FaSignOutAlt, FaEdit, FaSave, FaQrcode, FaTimes, FaTrashAlt, FaUserEdit } from 'react-icons/fa';
+// 1. Added new icons for the new tabs
+import { 
+    FaChartLine, FaCalendarAlt, FaSignOutAlt, FaEdit, FaSave, 
+    FaQrcode, FaTimes, FaTrashAlt, FaUserEdit, FaUsers, 
+    FaCreditCard, FaBell 
+} from 'react-icons/fa';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [bookings, setBookings] = useState([]);
   const [activeTab, setActiveTab] = useState('Dashboard');
+
+  // Data States
+  const [bookings, setBookings] = useState([]);
+  const [usersList, setUsersList] = useState([]); // Store registered users
+  const [payments, setPayments] = useState([]);   // Store payment history
+  const [notifications, setNotifications] = useState([]); // Store alerts
+
+  // Stats & Graphs
   const [stats, setStats] = useState({ recording: 0, rehearsal: 0, lesson: 0, mixing: 0 });
   const [isEditingRevenue, setIsEditingRevenue] = useState(false);
-  const [revenueData, setRevenueData] = useState([
-    { name: 'Date 1', revenue: 0 }, { name: 'Date 2', revenue: 0 },
-    { name: 'Date 3', revenue: 0 }, { name: 'Date 4', revenue: 0 },
-    { name: 'Date 5', revenue: 0 }, { name: 'Date 6', revenue: 0 },
-    { name: 'Date 7', revenue: 0 }, { name: 'Date 8', revenue: 0 },
-  ]);
+  const [revenueData, setRevenueData] = useState([]);
   const [editInfo, setEditInfo] = useState({ user: '', date: null });
   const [qrModal, setQrModal] = useState({ show: false, data: null });
 
   // --- HIDE FOOTER LOGIC ---
   useEffect(() => {
-    // 1. Find the footer (It usually has a <footer> tag or a class 'footer')
     const footer = document.querySelector('footer') || document.querySelector('.footer');
-    
-    if (footer) {
-      // 2. Hide it
-      footer.style.display = 'none';
-    }
-
-    // 3. Cleanup: Show it again when leaving this page
-    return () => {
-      if (footer) {
-        footer.style.display = ''; 
-      }
-    };
+    if (footer) footer.style.display = 'none';
+    return () => { if (footer) footer.style.display = ''; };
   }, []);
-  // -------------------------
 
   useEffect(() => {
     fetchBookings();
     fetchRevenueData(); 
+    fetchUsers(); // 2. Load Users
+    // Notifications and Payments are derived from bookings for now
   }, []);
+
+  // --- FETCH FUNCTIONS ---
 
   const fetchBookings = async () => {
     try {
@@ -57,10 +56,22 @@ const AdminDashboard = () => {
       const bookingList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setBookings(bookingList);
       calculateStats(bookingList);
+      generatePayments(bookingList);      // Generate mock payments from bookings
+      generateNotifications(bookingList); // Generate notifications from recent bookings
     } catch (error) {
       console.error("Error fetching bookings:", error);
     }
   };
+
+  const fetchUsers = async () => {
+    try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const uList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setUsersList(uList);
+    } catch (error) {
+        console.error("Error fetching users:", error);
+    }
+  }
 
   const fetchRevenueData = async () => {
     try {
@@ -75,11 +86,17 @@ const AdminDashboard = () => {
                 date: dbData.lastUpdatedAt?.toDate().toLocaleString()
             });
         }
+      } else {
+        // Default data if none exists
+        const blankData = Array(8).fill(null).map((_, i) => ({ name: `Date ${i+1}`, revenue: 0 }));
+        setRevenueData(blankData);
       }
     } catch (error) {
       console.error("Error fetching revenue:", error);
     }
   };
+
+  // --- LOGIC HELPERS ---
 
   const calculateStats = (data) => {
     let counts = { recording: 0, rehearsal: 0, lesson: 0, mixing: 0 };
@@ -93,6 +110,31 @@ const AdminDashboard = () => {
     setStats(counts);
   };
 
+  // Simulating Payments based on "Done" or "Confirmed" bookings
+  const generatePayments = (data) => {
+    const paidBookings = data.filter(b => b.status === 'Confirmed' || b.status === 'Done');
+    const mockPayments = paidBookings.map(b => ({
+        id: "PAY-" + b.bookingId,
+        user: b.userEmail,
+        amount: b.service.includes("Recording") ? 1500 : 500, // Example pricing
+        date: b.date,
+        status: "Completed"
+    }));
+    setPayments(mockPayments);
+  };
+
+  // Simulating Notifications based on recent bookings
+  const generateNotifications = (data) => {
+    const recent = data.slice(0, 5); // Take top 5 recent
+    const alerts = recent.map(b => ({
+        id: b.id,
+        message: `New Booking received from ${b.userEmail} for ${b.service}`,
+        time: "Just now",
+        isRead: false
+    }));
+    setNotifications(alerts);
+  }
+
   const handleStatusChange = async (id, newStatus) => {
     try {
       const bookingRef = doc(db, "bookings", id);
@@ -104,6 +146,7 @@ const AdminDashboard = () => {
     }
   };
 
+  // Revenue Handlers
   const handleRevenueChange = (index, field, value) => {
     const newData = revenueData.map((item, i) => {
       if (i === index) {
@@ -117,33 +160,19 @@ const AdminDashboard = () => {
     setRevenueData(newData);
   };
 
-  const handleResetData = () => {
-    const blankData = Array(8).fill(null).map((_, i) => ({ 
-        name: `Date ${i+1}`, revenue: 0 
-    }));
-    setRevenueData(blankData);
-  };
-
   const saveRevenueToDb = async () => {
-    if (!auth.currentUser) {
-        alert("You must be logged in to save.");
-        return;
-    }
+    if (!auth.currentUser) return alert("Login required");
     try {
-      const currentUserEmail = auth.currentUser.email;
       const now = new Date();
       await setDoc(doc(db, "admin", "revenue_stats"), {
         data: revenueData.map(d => ({...d, revenue: Number(d.revenue) || 0})),
-        lastUpdatedBy: currentUserEmail, 
+        lastUpdatedBy: auth.currentUser.email, 
         lastUpdatedAt: now               
       });
-      setEditInfo({ user: currentUserEmail, date: now.toLocaleString() });
+      setEditInfo({ user: auth.currentUser.email, date: now.toLocaleString() });
       setIsEditingRevenue(false); 
-      alert("Revenue data saved successfully!");
-    } catch (error) {
-      console.error("Error saving revenue:", error);
-      alert("Failed to save data.");
-    }
+      alert("Saved!");
+    } catch (error) { console.error(error); alert("Failed"); }
   };
 
   const handleAdminLogout = async () => {
@@ -151,11 +180,8 @@ const AdminDashboard = () => {
     navigate('/');
   };
 
-  const graphData = revenueData.map(d => ({
-    ...d,
-    revenue: Number(d.revenue) || 0
-  }));
-
+  // Graph Data Prep
+  const graphData = revenueData.map(d => ({ ...d, revenue: Number(d.revenue) || 0 }));
   const serviceData = [
     { name: 'Band Rehearsal', count: stats.rehearsal },
     { name: 'Recording', count: stats.recording },
@@ -166,14 +192,33 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-wrapper">
+      {/* 3. UPDATED SIDEBAR */}
       <div className="admin-sidebar">
         <div className="sidebar-logo"><h2>MixLab Admin</h2></div>
+        
+        <div className="admin-profile-mini">
+            <div className="mini-info">
+                <h4>Admin User</h4>
+                <span>Administrator</span>
+            </div>
+        </div>
+
         <ul className="sidebar-menu">
           <li className={activeTab === 'Dashboard' ? 'active' : ''} onClick={() => setActiveTab('Dashboard')}>
             <FaChartLine /> <span>Dashboard</span>
           </li>
+          <li className={activeTab === 'Users' ? 'active' : ''} onClick={() => setActiveTab('Users')}>
+            <FaUsers /> <span>Users</span>
+          </li>
           <li className={activeTab === 'Bookings' ? 'active' : ''} onClick={() => setActiveTab('Bookings')}>
             <FaCalendarAlt /> <span>Schedule</span>
+          </li>
+          <li className={activeTab === 'Payments' ? 'active' : ''} onClick={() => setActiveTab('Payments')}>
+            <FaCreditCard /> <span>Payments</span>
+          </li>
+          <li className={activeTab === 'Notifications' ? 'active' : ''} onClick={() => setActiveTab('Notifications')}>
+            <FaBell /> <span>Notifications</span>
+            {notifications.length > 0 && <span className="notif-badge">{notifications.length}</span>}
           </li>
         </ul>
         <div className="sidebar-logout">
@@ -187,36 +232,26 @@ const AdminDashboard = () => {
             <div className="admin-user-profile"><span>Admin Mode</span></div>
         </div>
 
+        {/* --- TAB: DASHBOARD --- */}
         {activeTab === 'Dashboard' && (
            <>
             <div className="charts-row">
+                {/* REVENUE CHART */}
                 <div className="chart-card large">
                     <div className="card-header-row">
                         <div>
                             <h3>Revenue Trend</h3>
                             {editInfo.user && (
                                 <p className="last-edited">
-                                    <FaUserEdit style={{marginRight:'5px'}}/> 
-                                    Last edit by <span style={{color:'#ffd700'}}>{editInfo.user}</span>
-                                    <br/>
-                                    <span style={{fontSize:'10px', marginLeft:'20px'}}>{editInfo.date}</span>
+                                    <FaUserEdit style={{marginRight:'5px'}}/> {editInfo.user}
                                 </p>
                             )}
                         </div>
                         <div style={{display:'flex', gap:'10px'}}>
                             {isEditingRevenue ? (
-                                <>
-                                    <button className="edit-btn" onClick={handleResetData} style={{borderColor:'#ff4444', color:'#ff4444'}}>
-                                        <FaTrashAlt /> Reset
-                                    </button>
-                                    <button className="edit-btn save-mode" onClick={saveRevenueToDb}>
-                                        <FaSave /> Save
-                                    </button>
-                                </>
+                                <button className="edit-btn save-mode" onClick={saveRevenueToDb}><FaSave /> Save</button>
                             ) : (
-                                <button className="edit-btn" onClick={() => setIsEditingRevenue(true)}>
-                                    <FaEdit /> Edit Data
-                                </button>
+                                <button className="edit-btn" onClick={() => setIsEditingRevenue(true)}><FaEdit /> Edit</button>
                             )}
                         </div>
                     </div>
@@ -225,13 +260,12 @@ const AdminDashboard = () => {
                         <div className="revenue-editor">
                             {revenueData.map((item, idx) => (
                                 <div key={idx} className="rev-input-group">
-                                    <input type="text" className="date-input" value={item.name} onChange={(e) => handleRevenueChange(idx, 'name', e.target.value)} placeholder="Label"/>
-                                    <input type="number" value={item.revenue} onChange={(e) => handleRevenueChange(idx, 'revenue', e.target.value)} placeholder="0"/>
+                                    <input type="text" className="date-input" value={item.name} onChange={(e) => handleRevenueChange(idx, 'name', e.target.value)} />
+                                    <input type="number" value={item.revenue} onChange={(e) => handleRevenueChange(idx, 'revenue', e.target.value)} />
                                 </div>
                             ))}
                         </div>
                     )}
-
                     <div style={{ width: '100%', height: 300 }}>
                         <ResponsiveContainer>
                         <AreaChart data={graphData}>
@@ -251,8 +285,9 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
+                {/* SERVICE STATS */}
                 <div className="chart-card">
-                    <h3>Bookings by Service Type</h3>
+                    <h3>Service Overview</h3>
                     <div style={{ width: '100%', height: 200, marginTop: '20px' }}>
                         <ResponsiveContainer>
                         <BarChart data={serviceData}>
@@ -267,57 +302,140 @@ const AdminDashboard = () => {
                         </ResponsiveContainer>
                     </div>
                     <div className="service-grid">
-                        <div className="stat-box"><span>Band Rehearsal</span><h3>{stats.rehearsal}</h3></div>
+                        <div className="stat-box"><span>Rehearsal</span><h3>{stats.rehearsal}</h3></div>
                         <div className="stat-box"><span>Recording</span><h3>{stats.recording}</h3></div>
-                        <div className="stat-box"><span>Music Lessons</span><h3>{stats.lesson}</h3></div>
-                        <div className="stat-box"><span>Mixing & Prod</span><h3>{stats.mixing}</h3></div>
                     </div>
                 </div>
             </div>
            </>
         )}
 
-        <div className="bookings-section">
-            <h3>Recent Booking Schedules</h3>
-            <div className="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ref ID</th>
-                            <th>Customer</th>
-                            <th>Service</th>
-                            <th>Date & Time</th>
-                            <th>QR Code</th>
-                            <th>Status (Edit)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {bookings.map((b) => (
-                            <tr key={b.id}>
-                                <td className="highlight">{b.bookingId}</td>
-                                <td>{b.userEmail}</td>
-                                <td>{b.service}</td>
-                                <td>{b.date} <br/><small>{b.time}</small></td>
-                                <td>
-                                    <button className="view-qr-btn" onClick={() => setQrModal({ show: true, data: `BookingID:${b.bookingId} | User:${b.userEmail}` })}>
-                                        <FaQrcode /> View
-                                    </button>
-                                </td>
-                                <td>
-                                    <select className={`status-select ${b.status}`} value={b.status} onChange={(e) => handleStatusChange(b.id, e.target.value)}>
-                                        <option value="Pending">Pending</option>
-                                        <option value="Confirmed">Confirmed</option>
-                                        <option value="On-going">On-going</option>
-                                        <option value="Done">Done</option>
-                                        <option value="Cancelled">Cancelled</option>
-                                    </select>
-                                </td>
+        {/* --- TAB: USERS --- */}
+        {activeTab === 'Users' && (
+            <div className="bookings-section">
+                <h3>Registered Users Database</h3>
+                <div className="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Contact</th>
+                                <th>Address</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {usersList.map((u) => (
+                                <tr key={u.id}>
+                                    <td className="highlight">{u.firstName} {u.lastName} <br/><small>{u.username}</small></td>
+                                    <td>{u.email}</td>
+                                    <td><span className={`badge ${u.role}`}>{u.role || 'user'}</span></td>
+                                    <td>{u.contactNumber || 'N/A'}</td>
+                                    <td>{u.address || 'N/A'}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        )}
+
+        {/* --- TAB: SCHEDULE / BOOKINGS --- */}
+        {activeTab === 'Bookings' && (
+             <div className="bookings-section">
+             <h3>All Booking Schedules</h3>
+             <div className="table-wrapper">
+                 <table>
+                     <thead>
+                         <tr>
+                             <th>Ref ID</th>
+                             <th>Customer</th>
+                             <th>Service</th>
+                             <th>Date</th>
+                             <th>Code</th>
+                             <th>Status</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         {bookings.map((b) => (
+                             <tr key={b.id}>
+                                 <td className="highlight">{b.bookingId}</td>
+                                 <td>{b.userEmail}</td>
+                                 <td>{b.service}</td>
+                                 <td>{b.date} <br/><small>{b.time}</small></td>
+                                 <td>
+                                     <button className="view-qr-btn" onClick={() => setQrModal({ show: true, data: `BookingID:${b.bookingId}` })}>
+                                         <FaQrcode />
+                                     </button>
+                                 </td>
+                                 <td>
+                                     <select className={`status-select ${b.status}`} value={b.status} onChange={(e) => handleStatusChange(b.id, e.target.value)}>
+                                         <option value="Pending">Pending</option>
+                                         <option value="Confirmed">Confirmed</option>
+                                         <option value="Done">Done</option>
+                                         <option value="Cancelled">Cancelled</option>
+                                     </select>
+                                 </td>
+                             </tr>
+                         ))}
+                     </tbody>
+                 </table>
+             </div>
+         </div>
+        )}
+
+        {/* --- TAB: PAYMENTS --- */}
+        {activeTab === 'Payments' && (
+             <div className="bookings-section">
+             <h3>Transaction History</h3>
+             <div className="table-wrapper">
+                 <table>
+                     <thead>
+                         <tr>
+                             <th>Transaction ID</th>
+                             <th>User</th>
+                             <th>Amount</th>
+                             <th>Date</th>
+                             <th>Status</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         {payments.map((p, index) => (
+                             <tr key={index}>
+                                 <td className="highlight">{p.id}</td>
+                                 <td>{p.user}</td>
+                                 <td style={{color: '#4caf50', fontWeight:'bold'}}>₱{p.amount}</td>
+                                 <td>{p.date}</td>
+                                 <td><span className="badge done">{p.status}</span></td>
+                             </tr>
+                         ))}
+                         {payments.length === 0 && <tr><td colSpan="5" style={{textAlign:'center'}}>No completed payments yet.</td></tr>}
+                     </tbody>
+                 </table>
+             </div>
+         </div>
+        )}
+
+        {/* --- TAB: NOTIFICATIONS --- */}
+        {activeTab === 'Notifications' && (
+             <div className="bookings-section">
+             <h3>System Notifications</h3>
+             <div className="notif-list">
+                {notifications.map((n, i) => (
+                    <div className="notif-item" key={i}>
+                        <div className="notif-icon"><FaBell /></div>
+                        <div className="notif-content">
+                            <h4>New Booking Alert</h4>
+                            <p>{n.message}</p>
+                            <span className="notif-time">{n.time}</span>
+                        </div>
+                    </div>
+                ))}
+                {notifications.length === 0 && <p>No new notifications.</p>}
+             </div>
+         </div>
+        )}
 
       </div>
 
@@ -325,8 +443,7 @@ const AdminDashboard = () => {
           <div className="modal-overlay" onClick={() => setQrModal({ show: false, data: null })}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                   <button className="close-modal" onClick={() => setQrModal({ show: false, data: null })}> <FaTimes /> </button>
-                  <h3>Customer QR Code</h3>
-                  <div className="qr-box"> <QRCode value={qrModal.data} size={200} /> </div>
+                  <QRCode value={qrModal.data} size={200} />
               </div>
           </div>
       )}

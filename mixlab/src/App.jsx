@@ -18,6 +18,8 @@ import Register from './Components/Login/Register/Register';
 import Booking from './Components/Booking/Booking';
 import BookingSuccess from './Components/Booking/BookingSuccess';
 import AdminDashboard from './Components/Admin/AdminDashboard';
+import UserProfile from './components/UserProfile/UserProfile';
+import MusicGame from './Pages/Homepage/MusicGame'; // ITO YUNG GAMES 
 
 const App = () => {
   return (
@@ -35,7 +37,12 @@ const App = () => {
         <Route path="/booking-success" element={<BookingSuccess />} />
 
          {/* ADMIN NA MALUPIT ITO */}
-         <Route path="/admindashboard" element={<AdminDashboard />} />
+         <Route path="/admin" element={<AdminDashboard />} />
+           {/* PROFILE ITO */}
+         <Route path="/profile" element={<UserProfile />} />
+
+          {/* ITO YUNG GAMES */}
+            <Route path="/game" element={<MusicGame />} />
          
          {/* 
           <Route path="/about" element={<About />} />
