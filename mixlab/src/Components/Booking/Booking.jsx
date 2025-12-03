@@ -8,7 +8,7 @@ import emailjs from '@emailjs/browser';
 import { 
   format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, 
   addDays, isSameDay, isSameMonth, addWeeks, setHours, setMinutes, 
-  isBefore, startOfToday, isSunday // 1. ADDED isSunday HERE
+  isBefore, startOfToday, isSunday 
 } from 'date-fns';
 import { FaChevronLeft, FaChevronRight, FaCalendarPlus, FaClock } from 'react-icons/fa';
 
@@ -21,18 +21,15 @@ const Booking = () => {
   
   const [showModal, setShowModal] = useState(false);
   const [service, setService] = useState('Recording Session');
-  // Default to 9:00 AM (09:00)
-  const [startTime, setStartTime] = useState('09:00'); 
+  const [startTime, setStartTime] = useState(''); 
   const [duration, setDuration] = useState(2); 
   const [recurrence, setRecurrence] = useState('single'); 
   const [loading, setLoading] = useState(false);
 
-  // CONFIGURATION
   const SERVICE_ID = "service_h9exr36";      
   const TEMPLATE_ID = "template_587lizb"; 
   const PUBLIC_KEY = "NFqrltbF3i2vRhImX";
 
-  // --- 2. DEFINE ALLOWED TIME SLOTS (9AM - 7PM) ---
   const timeSlots = [
     { value: '09:00', label: '09:00 AM' },
     { value: '10:00', label: '10:00 AM' },
@@ -66,6 +63,7 @@ const Booking = () => {
         return {
           id: doc.id,
           ...data,
+          // Safely convert Timestamp to JS Date
           start: data.start?.toDate ? data.start.toDate() : new Date(data.start),
           end: data.end?.toDate ? data.end.toDate() : new Date(data.end)
         };
@@ -75,18 +73,36 @@ const Booking = () => {
     return () => unsubscribe();
   }, []);
 
-  const checkConflict = (newStart, newEnd) => {
-    const conflicts = bookings.filter(b => {
-      return (newStart < b.end && newEnd > b.start);
+  // --- 1. UPDATED LOGIC: CHECK RANGES ---
+  const isSlotBooked = (timeValue) => {
+    // Convert the dropdown time (e.g. "10:00") into a real Date object for the selected day
+    const [h, m] = timeValue.split(':');
+    const slotTime = new Date(selectedDate);
+    slotTime.setHours(parseInt(h), parseInt(m), 0, 0);
+
+    // Check if this specific slot falls INSIDE any existing booking
+    return bookings.some(b => {
+        if (b.status === 'Cancelled') return false;
+        
+        // Is the slot time >= booking start AND < booking end?
+        // Example: Booking is 10:00 - 12:00.
+        // 10:00 >= 10:00 && 10:00 < 12:00 -> TRUE (Occupied)
+        // 11:00 >= 10:00 && 11:00 < 12:00 -> TRUE (Occupied)
+        // 12:00 >= 10:00 && 12:00 < 12:00 -> FALSE (Free)
+        return slotTime >= b.start && slotTime < b.end;
     });
-    return conflicts.length > 0;
   };
 
   const handleBook = async (e) => {
     e.preventDefault();
     setLoading(true);
     
-    // Convert "09:00" or "13:00" string to integers
+    if(!startTime) {
+        alert("Please select a time.");
+        setLoading(false);
+        return;
+    }
+
     const [hours, mins] = startTime.split(':');
     let baseStart = new Date(selectedDate);
     baseStart = setHours(baseStart, parseInt(hours));
@@ -107,9 +123,17 @@ const Booking = () => {
         }
     }
 
+    // --- 2. UPDATED CONFLICT CHECK (Precise Range Overlap) ---
+    const checkConflict = (newStart, newEnd) => {
+        return bookings.some(b => 
+            b.status !== 'Cancelled' && 
+            (newStart < b.end && newEnd > b.start) // Standard Overlap Logic
+        );
+    };
+
     for (let slot of bookingSlots) {
         if (checkConflict(slot.start, slot.end)) {
-            alert(`Conflict detected on ${format(slot.start, 'MMM dd, yyyy')}! Please choose a different time.`);
+            alert(`Conflict detected on ${format(slot.start, 'MMM dd, yyyy')}! This time range overlaps with an existing booking.`);
             setLoading(false);
             return; 
         }
@@ -130,7 +154,7 @@ const Booking = () => {
                 start: slot.start, 
                 end: slot.end,     
                 date: format(slot.start, 'yyyy-MM-dd'), 
-                time: format(slot.start, 'hh:mm a'), // Saves nicely formatted 12h time
+                time: format(slot.start, 'hh:mm a'),
                 duration: duration,
                 status: 'Pending',
                 type: recurrence,
@@ -205,26 +229,24 @@ const Booking = () => {
         formattedDate = format(day, "d");
         const cloneDay = day;
         
-        const dayBookings = bookings.filter(b => isSameDay(b.start, cloneDay));
+        const dayBookings = bookings.filter(b => isSameDay(b.start, cloneDay) && b.status !== 'Cancelled');
+        // A day is "Fully Booked" if there are > 8 bookings (Approx 16 hours / 2 hour sessions)
         const isFull = dayBookings.length >= 8; 
         
-        // --- 3. DISABLE LOGIC (Past OR Not Current Month OR Sunday) ---
         const isPast = isBefore(day, today);
         const isNotCurrentMonth = !isSameMonth(day, monthStart);
-        const isSundayDay = isSunday(day); // Checks if it is Sunday
+        const isSundayDay = isSunday(day);
 
-        // Combine logic
         const isDisabled = isPast || isNotCurrentMonth || isSundayDay;
 
         days.push(
           <div
             className={`cal-col cal-cell ${isDisabled ? "disabled" : isSameDay(day, selectedDate) ? "selected" : ""}`}
             key={day}
-            onClick={() => { if (!isDisabled) { setSelectedDate(cloneDay); setShowModal(true); }}}
+            onClick={() => { if (!isDisabled) { setSelectedDate(cloneDay); setShowModal(true); setStartTime(''); }}}
           >
             <span className="cal-number">{formattedDate}</span>
             
-            {/* Logic for Badges */}
             {!isNotCurrentMonth && !isPast && (
                 <>
                     {isSundayDay ? (
@@ -281,15 +303,31 @@ const Booking = () => {
 
                     <div className="row-inputs-cal">
                         <div className="input-group-cal">
-                            {/* --- REPLACED INPUT WITH DROPDOWN --- */}
                             <label><FaClock /> Start Time</label>
-                            <select value={startTime} onChange={e=>setStartTime(e.target.value)} required>
-                                {timeSlots.map((slot) => (
-                                    <option key={slot.value} value={slot.value}>
-                                        {slot.label}
-                                    </option>
-                                ))}
+                            
+                            <select 
+                                value={startTime} 
+                                onChange={e=>setStartTime(e.target.value)} 
+                                required
+                                style={{ backgroundColor: '#121212', color: 'white' }}
+                            >
+                                <option value="" disabled>Select Slot</option>
+                                {timeSlots.map((slot) => {
+                                    // This checks if the slot falls inside ANY existing booking duration
+                                    const isTaken = isSlotBooked(slot.value);
+                                    return (
+                                        <option 
+                                            key={slot.value} 
+                                            value={slot.value} 
+                                            disabled={isTaken} 
+                                            style={isTaken ? { backgroundColor: '#3f0f0f', color: '#ff6b6b' } : {}}
+                                        >
+                                            {slot.label} {isTaken ? '(Occupied)' : ''}
+                                        </option>
+                                    );
+                                })}
                             </select>
+
                         </div>
                         <div className="input-group-cal">
                             <label>Duration (Hours)</label>

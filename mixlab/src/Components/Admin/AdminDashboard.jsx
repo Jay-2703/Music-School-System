@@ -18,6 +18,7 @@ import {
 import { TrendingUp, TrendingDown, Users, DollarSign, CheckCircle, AlertCircle, Sparkles, Loader, Zap, Target, TrendingUpIcon, AlertTriangle, Lightbulb } from 'lucide-react';
 import AdminReports from './adminReports';
 import { generateRealTimeAnalysis } from '../../services/groqService';
+import AdminCalendar from './AdminCalendar';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -990,48 +991,12 @@ const AdminDashboard = () => {
         )}
 
         {/* --- TAB: SCHEDULE / BOOKINGS --- */}
-        {activeTab === 'Bookings' && (
-             <div className="bookings-section">
-             <h3>All Booking Schedules</h3>
-             <div className="table-wrapper">
-                 <table>
-                     <thead>
-                         <tr>
-                             <th>Ref ID</th>
-                             <th>Customer</th>
-                             <th>Service</th>
-                             <th>Date</th>
-                             <th>Code</th>
-                             <th>Status</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {bookings.map((b) => (
-                             <tr key={b.id}>
-                                 <td className="highlight">{b.bookingId}</td>
-                                 <td>{b.userEmail}</td>
-                                 <td>{b.service}</td>
-                                 <td>{b.date} <br/><small>{b.time}</small></td>
-                                 <td>
-                                     <button className="view-qr-btn" onClick={() => setQrModal({ show: true, data: `BookingID:${b.bookingId}` })}>
-                                         <FaQrcode />
-                                     </button>
-                                 </td>
-                                 <td>
-                                     <select className={`status-select ${b.status}`} value={b.status} onChange={(e) => handleStatusChange(b.id, e.target.value)}>
-                                         <option value="Pending">Pending</option>
-                                         <option value="Confirmed">Confirmed</option>
-                                         <option value="Check-in">Check-in</option>
-                                         <option value="Done">Done</option>
-                                         <option value="Cancelled">Cancelled</option>
-                                     </select>
-                                 </td>
-                             </tr>
-                         ))}
-                     </tbody>
-                 </table>
-             </div>
-         </div>
+              {activeTab === 'Bookings' && (
+            <div className="bookings-section">
+                <h3>Studio Schedule Management</h3>
+                {/* Replace the <table> with this: */}
+                <AdminCalendar />
+            </div>
         )}
 
         {/* --- TAB: PAYMENTS --- */}
