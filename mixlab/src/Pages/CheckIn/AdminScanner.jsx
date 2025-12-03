@@ -3,16 +3,20 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
 import { db } from '../../firebase'; 
 import { collection, addDoc, doc, getDoc, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import emailjs from '@emailjs/browser'; 
 import './AdminScanner.css'; 
 
 const AdminScanner = () => {
   const [scanResult, setScanResult] = useState(null);
   const [statusMessage, setStatusMessage] = useState("Ready to Scan");
-  // --- 1. NEW STATE FOR DROPDOWN SELECTION ---
-  const [scanAction, setScanAction] = useState("Check-in"); 
+  const [scanAction, setScanAction] = useState("Check-in");
   const navigate = useNavigate();
   
   const scannerRef = useRef(null);
+
+  const SERVICE_ID = "service_h9exr36";   
+  const TEMPLATE_ID = "template_ioum2uf"; 
+  const PUBLIC_KEY = "NFqrltbF3i2vRhImX";   
 
   useEffect(() => {
     const nav = document.querySelector('nav') || document.querySelector('.Nav1');
@@ -32,23 +36,40 @@ const AdminScanner = () => {
         scannerRef.current.render(onScanSuccess, onScanFailure);
     }, 100);
 
-    // --- MAIN SUCCESS FUNCTION ---
+    const sendNotificationEmail = (name, email, service, bookingDate, bookingTime) => {
+        const templateParams = {
+            to_name: name,
+            to_email: email,
+            service_name: service,
+            booking_date: bookingDate, 
+            booking_time: bookingTime,
+            scan_time: new Date().toLocaleString()
+        };
+
+        emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
+            .then((response) => console.log('EMAIL SENT'), (err) => console.log('EMAIL FAILED', err));
+    };
+
     async function onScanSuccess(decodedText) {
-      // NOTE: We need to access the LATEST value of scanAction. 
-      // Inside useEffect, state might be stale, but we can't easily add it to dependency array 
-      // without re-triggering the camera. 
-      // Ideally, we'd use a ref for the action, but for simplicity here, make sure to select before scanning.
-      
       if (scannerRef.current) {
           try { await scannerRef.current.clear(); } catch (e) {}
       }
       setStatusMessage("Processing...");
 
+      // --- DEBUGGING LOGS (Check Console F12) ---
+      console.log("Scanned Raw Text:", decodedText);
+
       try {
-        // === SCENARIO A: SCANNING A BOOKING QR ===
+        const selectedAction = document.getElementById('actionSelector').value;
+
+        // === SCENARIO A: BOOKING QR ===
         if (decodedText.startsWith("BookingID:")) {
-            const rawBookingId = decodedText.split(":")[1]; 
+            // 1. Extract and CLEAN the ID (Remove spaces)
+            const rawBookingId = decodedText.split(":")[1].trim(); 
             
+            console.log("Searching Database for BookingID:", rawBookingId);
+
+            // 2. Search Firebase
             const q = query(collection(db, "bookings"), where("bookingId", "==", rawBookingId));
             const querySnapshot = await getDocs(q);
 
@@ -57,55 +78,77 @@ const AdminScanner = () => {
                 const bookingRef = bookingDoc.ref;
                 const bookingData = bookingDoc.data();
 
-                // --- 2. USE THE SELECTED ACTION FROM DROPDOWN ---
-                // We assume 'scanAction' state is available (in some React versions inside closure this might be tricky, 
-                // but usually works if component re-renders. If not, we use a ref).
-                
-                // Let's grab the value directly from the DOM element to be 100% safe inside this closure
-                const selectedAction = document.getElementById('actionSelector').value;
+                if (bookingData.status === "Check-in" || bookingData.status === "Done") {
+                    setScanResult({ success: false, msg: "QR Already Used" });
+                    setStatusMessage("⚠️ Already Checked In.");
+                } else {
+                    await updateDoc(bookingRef, { status: selectedAction });
 
-                await updateDoc(bookingRef, { status: selectedAction });
+                    // Send Email
+                   if (bookingData.userEmail) {
+                        sendNotificationEmail(
+                        bookingData.userEmail, 
+                        bookingData.userEmail, 
+                        bookingData.service,
+                        bookingData.date || "N/A", 
+                        bookingData.time || "N/A"
+                    );
+                    } else {
+                        console.log("No email found for this user, skipping notification.");
+                    }
 
-                setScanResult({ 
-                    success: true, 
-                    type: 'booking',
-                    name: bookingData.service, 
-                    id: rawBookingId,
-                    action: selectedAction
-                });
-                setStatusMessage(`✅ Booking Updated to: ${selectedAction}`);
-                
+                    setScanResult({ 
+                        success: true, 
+                        type: 'booking',
+                        name: bookingData.service, 
+                        id: rawBookingId,
+                        action: selectedAction
+                    });
+                    setStatusMessage(`✅ Updated & Email Sent!`);
+                    
+                }
             } else {
-                setScanResult({ success: false, msg: "Booking Not Found" });
-                setStatusMessage("❌ Booking ID not found.");
+                // *** THIS IS YOUR CURRENT ERROR ***
+                // It means the ID in the QR code does not match any 'bookingId' field in Firebase.
+                setScanResult({ success: false, msg: `Booking Not Found: ${rawBookingId}` });
+                setStatusMessage(`❌ ID "${rawBookingId}" not found.`);
             }
         } 
+        
         // === SCENARIO B: USER ID ===
         else {
-            // Default behavior for User IDs is usually just Check-in
-            const userId = decodedText;
+            const userId = decodedText.trim();
             const userRef = doc(db, "users", userId);
             const userSnap = await getDoc(userRef);
 
             if (userSnap.exists()) {
                 const userData = userSnap.data();
+                const userName = userData.username || "User";
+                const userEmail = userData.email; 
+
                 await addDoc(collection(db, "attendance"), {
                     userId: userId,
-                    name: userData.username || "User",
+                    name: userName,
                     timestamp: new Date(),
                     type: "check-in"
                 });
-                setScanResult({ success: true, type: 'attendance', name: userData.username });
-                setStatusMessage(`✅ Attendance Logged for ${userData.username}`);
+
+                if(userEmail) {
+                    sendNotificationEmail(userName, userEmail, "General Check-in", "N/A", "N/A");
+                }
+
+                setScanResult({ success: true, type: 'attendance', name: userName });
+                setStatusMessage(`✅ Welcome ${userName}.`);
             } else {
                 setScanResult({ success: false, msg: "Invalid QR Code" });
             }
         }
 
-      } catch (error) {
-        console.error(error);
-        setStatusMessage("❌ System Error.");
-      }
+            } catch (error) {
+                console.error(error);
+              // This prints the actual error message to the screen
+                setStatusMessage(`❌ Error: ${error.message}`);
+            }
     }
 
     function onScanFailure(error) {}
@@ -127,16 +170,10 @@ const AdminScanner = () => {
     <div className="scanner-page">
       <h1>Studio Scanner</h1>
       
-      {/* --- 3. ADDED DROPDOWN HERE --- */}
       {!scanResult && (
         <div className="action-container">
             <label>Set Status To:</label>
-            <select 
-                id="actionSelector"
-                className="scan-dropdown"
-                value={scanAction} 
-                onChange={(e) => setScanAction(e.target.value)}
-            >
+            <select id="actionSelector" className="scan-dropdown" value={scanAction} onChange={(e) => setScanAction(e.target.value)}>
                 <option value="Check-in">Check-in</option>
                 <option value="Confirmed">Confirmed</option>
                 <option value="Done">Done</option>
@@ -146,7 +183,7 @@ const AdminScanner = () => {
         </div>
       )}
 
-      <p>{statusMessage}</p>
+      <p style={{color: statusMessage.includes("❌") ? "red" : "white"}}>{statusMessage}</p>
       
       {!scanResult ? (
         <div id="reader" style={{ width: '300px', margin: 'auto' }}></div>
@@ -155,18 +192,8 @@ const AdminScanner = () => {
           {scanResult.success ? (
             <>
               <h2 style={{color: '#4caf50'}}>SUCCESS!</h2>
-              {scanResult.type === 'booking' ? (
-                  <>
-                    <p>Booking ID: <strong>{scanResult.id}</strong></p>
-                    <p>Service: <strong>{scanResult.name}</strong></p>
-                    <h3 style={{color: '#ffd700'}}>STATUS: {scanResult.action.toUpperCase()}</h3>
-                  </>
-              ) : (
-                  <>
-                    <h3>{scanResult.name}</h3>
-                    <p>Attendance Logged.</p>
-                  </>
-              )}
+              <p>Action: {scanResult.action || "Check-in"}</p>
+              <p>Email Notification Sent!</p>
             </>
           ) : (
              <h2 style={{color: 'red'}}>ERROR: {scanResult.msg}</h2>
@@ -174,8 +201,28 @@ const AdminScanner = () => {
           <button onClick={handleReset} className="reset-btn">Scan Next</button>
         </div>
       )}
+
+      
       
       <button onClick={() => navigate('/admin')} className="back-link">Exit Scanner</button>
+
+
+     {/* <button onClick={() => {
+            const templateParams = {
+                to_name: "Test User",
+                to_email: "your_real_email@gmail.com", 
+                service_name: "Test Service",
+                booking_date: bookingDate,  
+                booking_time: bookingTime,  
+                scan_time: new Date().toLocaleString()
+            };
+
+              // MAKE SURE THESE VARIABLES (SERVICE_ID, etc) ARE DEFINED AT THE TOP OF YOUR FILE
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
+                .then(() => alert("Email Sent Successfully!"), (err) => alert("Failed: " + JSON.stringify(err)));
+        }}
+          tyle={{ marginTop: '20px', padding: '10px', background: 'orange' }}>TEST EMAIL ONLY</button> */}
+
     </div>
   );
 };
