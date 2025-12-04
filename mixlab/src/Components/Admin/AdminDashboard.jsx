@@ -19,6 +19,7 @@ import { TrendingUp, TrendingDown, Users, DollarSign, CheckCircle, AlertCircle, 
 import AdminReports from './adminReports';
 import { generateRealTimeAnalysis } from '../../services/groqService';
 import AdminCalendar from './AdminCalendar';
+import AdminInstructors from './AdminInstructors';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -30,7 +31,8 @@ const AdminDashboard = () => {
   const [bookings, setBookings] = useState([]);
   const [usersList, setUsersList] = useState([]); 
   const [payments, setPayments] = useState([]);   
-  const [notifications, setNotifications] = useState([]); 
+  const [notifications, setNotifications] = useState([]);
+  const [notifTab, setNotifTab] = useState('all'); 
 
   // Stats & Graphs
   const [stats, setStats] = useState({ recording: 0, rehearsal: 0, lesson: 0, mixing: 0 });
@@ -166,6 +168,12 @@ const AdminDashboard = () => {
         isRead: false
     }));
     setNotifications(alerts);
+  }
+
+  const getTimeElapsed = (timeString) => {
+    if (timeString === "Just now") return "Just now";
+    // Add more time parsing logic as needed
+    return timeString;
   }
 
   const handleStatusChange = async (id, newStatus) => {
@@ -573,6 +581,9 @@ const AdminDashboard = () => {
           <li className={activeTab === 'Notifications' ? 'active' : ''} onClick={() => { setActiveTab('Notifications'); setSidebarOpen(false); }}>
             <FaBell /> <span>Notifications</span>
           </li>
+          <li className={activeTab === 'Instructors' ? 'active' : ''} onClick={() => { setActiveTab('Instructors'); setSidebarOpen(false); }}>
+            <FaUserEdit /> <span>Instructors</span>
+          </li>
           <li className={activeTab === 'Reports' ? 'active' : ''} onClick={() => { setActiveTab('Reports'); setSidebarOpen(false); }}>
             <FaFileAlt /> <span>Reports</span>
           </li>
@@ -779,45 +790,6 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            {/* OCCUPANCY GAUGE */}
-            <div className="chart-card">
-              <h2>Studio Occupancy - Today</h2>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '40px', padding: '20px' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#2563eb', marginBottom: '10px' }}>
-                    {occupancyData.occupancy}%
-                  </div>
-                  <div style={{ color: '#888', fontSize: '14px' }}>
-                    <p>{occupancyData.booked} booked / {occupancyData.available} available</p>
-                  </div>
-                </div>
-                <div style={{
-                  width: '200px',
-                  height: '200px',
-                  borderRadius: '50%',
-                  background: `conic-gradient(#2563eb 0deg ${occupancyData.occupancy * 3.6}deg, #333 ${occupancyData.occupancy * 3.6}deg 360deg)`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <div style={{
-                    width: '180px',
-                    height: '180px',
-                    borderRadius: '50%',
-                    backgroundColor: '#1a1a1a',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    color: '#2563eb'
-                  }}>
-                    {occupancyData.occupancy}%
-                  </div>
-                </div>
-              </div>
-            </div>
-            <ChartInsightBox chartType="occupancy" />
 
             {/* TABLES ROW - Upcoming Sessions & Recent Bookings */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
@@ -1065,21 +1037,92 @@ const AdminDashboard = () => {
         {/* --- TAB: NOTIFICATIONS --- */}
         {activeTab === 'Notifications' && (
              <div className="bookings-section">
-             <h3>System Notifications</h3>
+             <h3>Notifications</h3>
+             <div className="notif-tabs">
+                <button className={`notif-tab-btn ${notifTab === 'all' ? 'active' : ''}`} onClick={() => setNotifTab('all')}>All</button>
+                <button className={`notif-tab-btn ${notifTab === 'unread' ? 'active' : ''}`} onClick={() => setNotifTab('unread')}>Unread</button>
+                <button className={`notif-tab-btn ${notifTab === 'read' ? 'active' : ''}`} onClick={() => setNotifTab('read')}>Read</button>
+             </div>
              <div className="notif-list">
-                {notifications.map((n, i) => (
-                    <div className="notif-item" key={i}>
+                {notifTab === 'all' && notifications.map((n, i) => (
+                    <div 
+                        className={`notif-item ${!n.isRead ? 'unread' : ''}`} 
+                        key={i}
+                    >
                         <div className="notif-icon"><FaBell /></div>
                         <div className="notif-content">
                             <h4>New Booking Alert</h4>
                             <p>{n.message}</p>
-                            <span className="notif-time">{n.time}</span>
+                            <span className="notif-time">{getTimeElapsed(n.time)}</span>
+                        </div>
+                        {!n.isRead && (
+                            <button 
+                                className="notif-read-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const updatedNotifs = notifications.map((notif, idx) => 
+                                        idx === i ? { ...notif, isRead: true } : notif
+                                    );
+                                    setNotifications(updatedNotifs);
+                                    setNotifTab('read');
+                                }}
+                            >
+                                Mark as Read
+                            </button>
+                        )}
+                    </div>
+                ))}
+                {notifTab === 'unread' && notifications.filter(n => !n.isRead).map((n, unreadIdx) => {
+                    const actualIdx = notifications.findIndex(notif => notif === n);
+                    return (
+                        <div 
+                            className={`notif-item unread`} 
+                            key={unreadIdx}
+                        >
+                            <div className="notif-icon"><FaBell /></div>
+                            <div className="notif-content">
+                                <h4>New Booking Alert</h4>
+                                <p>{n.message}</p>
+                                <span className="notif-time">{getTimeElapsed(n.time)}</span>
+                            </div>
+                            <button 
+                                className="notif-read-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const updatedNotifs = notifications.map((notif, idx) => 
+                                        idx === actualIdx ? { ...notif, isRead: true } : notif
+                                    );
+                                    setNotifications(updatedNotifs);
+                                    setNotifTab('read');
+                                }}
+                            >
+                                Mark as Read
+                            </button>
+                        </div>
+                    );
+                })}
+                {notifTab === 'read' && notifications.filter(n => n.isRead).map((n, i) => (
+                    <div 
+                        className={`notif-item`} 
+                        key={i}
+                    >
+                        <div className="notif-icon"><FaBell /></div>
+                        <div className="notif-content">
+                            <h4>New Booking Alert</h4>
+                            <p>{n.message}</p>
+                            <span className="notif-time">{getTimeElapsed(n.time)}</span>
                         </div>
                     </div>
                 ))}
-                {notifications.length === 0 && <p>No new notifications.</p>}
+                {((notifTab === 'all' && notifications.length === 0) || (notifTab === 'unread' && notifications.filter(n => !n.isRead).length === 0) || (notifTab === 'read' && notifications.filter(n => n.isRead).length === 0)) && (
+                    <p style={{ textAlign: 'center', padding: '30px 20px', color: '#95a5a6', fontSize: '14px' }}>No notifications</p>
+                )}
              </div>
          </div>
+        )}
+
+        {activeTab === 'Instructors' && (
+          <AdminInstructors />
         )}
 
         {activeTab === 'Reports' && (
