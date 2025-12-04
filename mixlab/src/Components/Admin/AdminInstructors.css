@@ -1,0 +1,492 @@
+
+.instructor-management {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e8f1f8 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.instructor-container {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.filter-section {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e8f1f8 100%);
+  padding: 20px 0;
+  z-index: 100;
+}
+
+.instructor-header {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+  border-top: 4px solid #0066cc;
+}
+
+.instructor-header h1 {
+  color: #0066cc;
+  font-size: 2.5em;
+  text-align: center;
+  margin: 0;
+}
+
+.instructor-subtitle {
+  color: #666;
+  font-size: 1.1em;
+  margin-top: 5px;
+  text-align: center;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: #f0f4f8;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 102, 204, 0.15);
+}
+
+.stat-number {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #0066cc;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 1em;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 25px;
+  transition: grid-template-columns 0.3s ease;
+}
+
+.main-content.with-sidebar {
+  grid-template-columns: 400px 1fr;
+}
+
+.profile-sidebar {
+  background: #f0f4f8;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  position: sticky;
+  top: 20px;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #ddd;
+}
+
+.profile-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #0066cc;
+}
+
+.close-profile-btn {
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+}
+
+.close-profile-btn:hover {
+  color: #333;
+}
+
+.profile-avatar-container {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.profile-avatar-large {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5em;
+  font-weight: bold;
+  color: white;
+  margin: 0 auto 15px;
+}
+
+.profile-name {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #333;
+}
+
+.instructors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 25px;
+}
+
+.instructor-card {
+  background: #f0f4f8;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+}
+
+.instructor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 102, 204, 0.15);
+}
+
+.instructor-card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.instructor-card-header:hover {
+  background: #f0f4f8;
+  margin: -10px -10px 20px -10px;
+  padding: 10px 10px 25px 10px;
+  border-radius: 10px;
+}
+
+.instructor-avatar {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: white;
+  flex-shrink: 0;
+}
+
+.instructor-info {
+  flex: 1;
+}
+
+.instructor-name {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.instrument-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 0.85em;
+  background-color: #0066cc;
+  color: white;
+}
+
+.instrument-badge.guitar {
+  background: #0066cc;
+  color: white;
+}
+
+.instrument-badge.piano {
+  background: #0066cc;
+  color: white;
+}
+
+.students-section {
+  margin-top: 20px;
+}
+
+.section-title {
+  font-weight: 600;
+  color: #0066cc;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+}
+
+.student-card {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid #e0eef5;
+}
+
+.student-card:hover {
+  background: #f0f4f8;
+  border-color: #0066cc;
+  transform: translateX(5px);
+}
+
+.student-card.active {
+  background: #f0f4f8;
+  border-color: #0066cc;
+}
+
+.student-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.student-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 1.05em;
+}
+
+.sessions-badge {
+  background: #0066cc;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.student-quick-info {
+  margin-top: 8px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.empty-students {
+  text-align: center;
+  padding: 30px;
+  color: #999;
+  font-style: italic;
+}
+
+.profile-section {
+  margin-bottom: 25px;
+}
+
+.profile-section-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.info-value {
+  color: #333;
+}
+
+.info-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1em;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.info-input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.info-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.2s ease;
+}
+
+.info-textarea:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.attendance-section {
+  background: #f0f4f8;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border-left: 4px solid #0066cc;
+}
+
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.attendance-stats {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #0066cc;
+}
+
+.progress-bar-container {
+  background: #d0d0d0;
+  height: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #0066cc 0%, #0052a3 100%);
+  transition: width 0.3s;
+}
+
+.session-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.session-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1em;
+}
+
+.session-btn-add {
+  background: #28a745;
+  color: white;
+}
+
+.session-btn-add:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-2px);
+}
+
+.session-btn-remove {
+  background: #dc3545;
+  color: white;
+}
+
+.session-btn-remove:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-2px);
+}
+
+.session-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.profile-btn-save {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+  color: white;
+}
+
+.profile-btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+@media (max-width: 1200px) {
+  .main-content.with-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-sidebar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-height: calc(100vh - 40px);
+  }
+}
